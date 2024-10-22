@@ -101,14 +101,39 @@ def unprocessable(error):
                     }), 404
 
 '''
+@app.errorhandler(404)
+def resource_not_found(err):
+    return (
+        jsonify({
+            "success": False,
+            "error": 404,
+            "message": "resource not found"
+        }),
+        404
+    )
 
 '''
 @TODO implement error handler for 404
     error handler should conform to general task above
 '''
+class NotFound:
+    def __init__(self, err):
+        object_error = {
+            self.success: False,
+            self.error: 404,
+            self.message: err.description if err.description else 'Resource not found!'
+        }
+        return (
+            jsonify(object_error), 404
+        )
 
 
 '''
 @TODO implement error handler for AuthError
     error handler should conform to general task above
 '''
+
+
+
+if __name__ == '__main__':
+    app.run()
