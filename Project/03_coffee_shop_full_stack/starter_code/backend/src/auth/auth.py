@@ -1,8 +1,8 @@
 import json
-from flask import request, _request_ctx_stack
+from flask import request, abort
 from functools import wraps
 from jose import jwt
-from urllib.request import urlopen
+from urllib.request import urlopen 
 
 
 AUTH0_DOMAIN = 'udacity-fsnd.auth0.com'
@@ -31,7 +31,29 @@ class AuthError(Exception):
     return the token part of the header
 '''
 def get_token_auth_header():
-   raise Exception('Not Implemented')
+    auth_header = request.headers['Authorization', None]
+    if not auth_header:
+        raise AuthError({
+            'code': 'authorization_header_missing',
+            'message': 'Authorization header is expected.'
+        }, 401)
+
+
+    header_parts = auth_header.split(' ')
+
+    if len(header_parts) != 2:
+        raise AuthError({
+            'code': 'invalid_header',
+            'message': 'Authorization header is invalid.'
+        }, 401)
+    
+    elif header_parts[0].lower() != 'bearer':
+        raise AuthError({
+            'code': 'invalid_header',
+            'message': 'Authorization header must start with "Bearer".'
+        }, 401)
+    
+    return header_parts[1]
 
 '''
 @TODO implement check_permissions(permission, payload) method
