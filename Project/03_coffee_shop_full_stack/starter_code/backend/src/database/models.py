@@ -2,7 +2,7 @@ import os
 from sqlalchemy import Column, String, Integer
 from flask_sqlalchemy import SQLAlchemy
 import json
-from settings import DB_NAME, DB_USER, DB_PASSWORD
+from ..settings import DB_NAME, DB_USER, DB_PASSWORD
 
 database_filename = DB_NAME
 database_user = DB_USER
@@ -67,8 +67,9 @@ class Drink(db.Model):
     '''
 
     def short(self):
-        print(json.loads(self.recipe))
-        short_recipe = [{'color': r['color'], 'parts': r['parts']} for r in json.loads(self.recipe)]
+        recipe_str = self.recipe.strip("'")
+        print(json.loads(recipe_str))
+        short_recipe = [{'color': r['color'], 'parts': r['parts'], 'name': r['name']} for r in json.loads(recipe_str)]
         return {
             'id': self.id,
             'title': self.title,
@@ -81,10 +82,11 @@ class Drink(db.Model):
     '''
 
     def long(self):
+        recipe_str = self.recipe.strip("'")
         return {
             'id': self.id,
             'title': self.title,
-            'recipe': json.loads(self.recipe)
+            'recipe': json.loads(recipe_str)
         }
 
     '''
