@@ -54,4 +54,14 @@ export class DrinkFormComponent implements OnInit {
     this.drinkService.deleteDrink(this.drink);
     this.closeModal();
   }
+
+  disableBtnRemoveRecipe(i, drink): boolean {
+    return (
+      !this.auth.can("patch:drinks") || (i == 0 && drink.recipe.length == 1)
+    );
+  }
+
+  disableBtnAddRecipe(drink): boolean {
+    return !this.auth.can("patch:drinks") || drink.recipe.length == 5;
+  }
 }

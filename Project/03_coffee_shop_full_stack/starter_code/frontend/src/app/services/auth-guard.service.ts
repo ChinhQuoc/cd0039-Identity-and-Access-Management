@@ -21,16 +21,12 @@ export class AuthGuardService implements CanActivate {
     | Promise<boolean | UrlTree>
     | boolean
     | UrlTree {
-    return this.authService.isAuthenticated().pipe(
-      map((isAuthenticated) => {
-        if (isAuthenticated) {
-          return true;
-        } else {
-          const link = this.authService.build_login_link();
-          window.location.href = link;
-          return false;
-        }
-      })
-    );
+    if (this.authService.isAuthenticated()) {
+      return true;
+    }
+
+    const link = this.authService.build_login_link();
+    window.location.href = link;
+    return false;
   }
 }

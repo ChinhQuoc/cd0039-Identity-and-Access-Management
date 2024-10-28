@@ -29,7 +29,8 @@ CORS(app)
         or appropriate status code indicating reason for failure
 '''
 @app.route('/drinks', methods=['GET'])
-def get_drinks():
+@requires_auth('get:drinks')
+def get_drinks(payload):
     drinks = Drink.query.all()
     short_drinks = [drink.short() for drink in drinks]
 
@@ -47,7 +48,8 @@ def get_drinks():
         or appropriate status code indicating reason for failure
 '''
 @app.route('/drinks-detail/<int:id>', methods=['GET'])
-def get_drinks_detail(id):
+@requires_auth('get:drinks-detail')
+def get_drinks_detail(payload, id):
     id_drink = int(id)
     drink = Drink.query.filter_by(id=id_drink).one_or_none()
 
@@ -69,7 +71,8 @@ def get_drinks_detail(id):
         or appropriate status code indicating reason for failure
 '''
 @app.route('/drinks', methods=['POST'])
-def create_drink():
+@requires_auth('post:drinks')
+def create_drink(payload):
     body = request.get_json()
     
     new_title = body.get('title', None)
@@ -97,16 +100,16 @@ def create_drink():
     returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the updated drink
         or appropriate status code indicating reason for failure
 '''
-@app.route('/drinks/<int:id>', methods=['PATCH'])
-def update_drink(id):
-    id_drink = int(id)
-
+@app.route('/drinks', methods=['PATCH'])
+@requires_auth('patch:drinks')
+def update_drink(payload):
+    body = request.get_json()
+    id_drink = body.get('id')
     drink = Drink.query.filter_by(id=id_drink).one_or_none()
 
     if drink is None:
         abort(404)
-    
-    body = request.get_json()
+
     new_title = body.get('title', None)
     new_recipe = body.get('recipe', None)
     drink.title = new_title
@@ -133,7 +136,8 @@ def update_drink(id):
         or appropriate status code indicating reason for failure
 '''
 @app.route('/drinks/<int:id>', methods=['DELETE'])
-def delete_drink(id):
+@requires_auth('delete:drinks')
+def delete_drink(payload, id):
     id_drink = int(id)
 
     drink = Drink.query.filter_by(id=id_drink).one_or_none()
@@ -208,7 +212,13 @@ class NotFound:
 @TODO implement error handler for AuthError
     error handler should conform to general task above
 '''
-
+@app.errorhandler(AuthError)
+def handle_auth_error(error):
+    return jsonify({
+        "success": False,
+        "error": error.status_code,
+        "message": error.error['message']
+    }), error.status_code
 
 
 if __name__ == '__main__':

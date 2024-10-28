@@ -30,7 +30,8 @@ class AuthError(Exception):
     return the token part of the header
 '''
 def get_token_auth_header():
-    auth_header = request.headers['Authorization', None]
+    auth_header = request.headers.get('Authorization')
+    
     if not auth_header:
         raise AuthError({
             'code': 'authorization_header_missing',
@@ -66,7 +67,7 @@ def get_token_auth_header():
     return true otherwise
 '''
 def check_permissions(permission, payload):
-    if 'permission' not in payload:
+    if 'permissions' not in payload:
         raise AuthError({
             'code': 'invalid_claims',
             'description': 'Permissions not included in JWT.'
