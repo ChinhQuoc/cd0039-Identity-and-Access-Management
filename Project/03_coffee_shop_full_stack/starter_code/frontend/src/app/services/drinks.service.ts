@@ -91,39 +91,33 @@ export class DrinksService {
   }
 
   getDrinks() {
-    this.http
-      .get(this.url + "/drinks", this.getHeaders())
-      .subscribe((res: any) => {
-        this.drinksToItems(res.drinks);
-      });
+    this.http.get(this.url + "/drinks").subscribe((res: any) => {
+      this.drinksToItems(res.drinks);
+    });
   }
 
   saveDrink(drink: Drink) {
     if (drink.id >= 0) {
       // patch
-      this.http
-        .patch(this.url + "/drinks/" + drink.id, drink, this.getHeaders())
-        .subscribe((res: any) => {
-          if (res.success) {
-            this.drinksToItems(res.drinks);
-          }
-        });
+      this.http.patch(this.url + "/drinks", drink).subscribe((res: any) => {
+        if (res.success) {
+          this.drinksToItems(res.drinks);
+        }
+      });
     } else {
       // insert
-      this.http
-        .post(this.url + "/drinks", drink, this.getHeaders())
-        .subscribe((res: any) => {
-          if (res.success) {
-            this.drinksToItems(res.drinks);
-          }
-        });
+      this.http.post(this.url + "/drinks", drink).subscribe((res: any) => {
+        if (res.success) {
+          this.drinksToItems(res.drinks);
+        }
+      });
     }
   }
 
   deleteDrink(drink: Drink) {
     delete this.items[drink.id];
     this.http
-      .delete(this.url + "/drinks/" + drink.id, this.getHeaders())
+      .delete(this.url + "/drinks/" + drink.id)
       .subscribe((res: any) => {});
   }
 

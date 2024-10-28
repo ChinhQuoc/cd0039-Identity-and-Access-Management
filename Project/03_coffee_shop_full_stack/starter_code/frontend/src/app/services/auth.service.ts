@@ -5,7 +5,6 @@ import { environment } from "../../environments/environment";
 import { BehaviorSubject, Observable, of } from "rxjs";
 
 const JWTS_LOCAL_KEY = "JWTS_LOCAL_KEY";
-const JWTS_ACTIVE_INDEX_KEY = "JWTS_ACTIVE_INDEX_KEY";
 
 @Injectable({
   providedIn: "root",
@@ -18,6 +17,8 @@ export class AuthService {
 
   token: string;
   payload: any;
+
+  jwtHelper = new JwtHelperService();
 
   constructor() {}
 
@@ -53,7 +54,7 @@ export class AuthService {
   }
 
   load_jwts() {
-    this.token = localStorage.getItem(JWTS_LOCAL_KEY) || null;
+    this.token = this.getToken() || null;
     if (this.token) {
       this.decodeJWT(this.token);
     }
@@ -70,9 +71,15 @@ export class AuthService {
   }
 
   logout() {
-    this.token = "";
+    this.token = null;
     this.payload = null;
-    this.set_jwt();
+    localStorage.removeItem(JWTS_LOCAL_KEY);
+  }
+
+  login() {
+    const link = this.build_login_link();
+    window.location.href = link;
+    return;
   }
 
   can(permission: string) {
@@ -84,8 +91,12 @@ export class AuthService {
     );
   }
 
-  isAuthenticated(): Observable<boolean> {
-    this.token = localStorage.getItem(JWTS_LOCAL_KEY) || null;
-    return of(!!this.token);
+  isAuthenticated(): boolean {
+    const token = this.getToken() || null;
+    return token ? !this.jwtHelper.isTokenExpired(token) : false;
+  }
+
+  getToken(): string | null {
+    return localStorage.getItem(JWTS_LOCAL_KEY);
   }
 }

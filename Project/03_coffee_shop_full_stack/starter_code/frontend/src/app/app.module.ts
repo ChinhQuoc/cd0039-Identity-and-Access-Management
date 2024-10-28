@@ -12,10 +12,11 @@ import { AppComponent } from "./app.component";
 import { DrinksService } from "./services/drinks.service";
 import { AuthService } from "./services/auth.service";
 
-import { HttpClientModule } from "@angular/common/http";
+import { HTTP_INTERCEPTORS, HttpClientModule } from "@angular/common/http";
 
 import { from } from "rxjs";
 import { AuthGuardService } from "./services/auth-guard.service";
+import { AuthInterceptorService } from "./services/auth-interceptor.service";
 
 @NgModule({
   declarations: [AppComponent],
@@ -33,6 +34,11 @@ import { AuthGuardService } from "./services/auth-guard.service";
     DrinksService,
     AuthGuardService,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptorService,
+      multi: true,
+    },
   ],
   bootstrap: [AppComponent],
 })

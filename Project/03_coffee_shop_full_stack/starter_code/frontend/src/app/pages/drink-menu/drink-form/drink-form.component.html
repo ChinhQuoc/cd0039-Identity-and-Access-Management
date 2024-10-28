@@ -43,12 +43,12 @@
 
       <ion-button
         (click)="removeIngredient(i)"
-        [disabled]="i == 0 && drink.recipe.length == 1"
+        [disabled]="disableBtnRemoveRecipe(i, drink)"
         >Remove</ion-button
       ><br />
       <ion-button
         (click)="addIngredient(i)"
-        [disabled]="drink.recipe.length == 5"
+        [disabled]="disableBtnAddRecipe(drink)"
         >ADD</ion-button
       ><br />
     </ion-item>
